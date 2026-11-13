@@ -1,0 +1,65 @@
+services:
+  docker-update:
+    image: python:3.11-alpine
+    container_name: docker-update
+    hostname: docker-update
+    restart: unless-stopped
+    working_dir: /app
+    # 直接用官方 Python 镜像运行源码，零构建、零 pip 依赖，飞牛「项目」可一键导入
+    command: python /app/server.py
+    ports:
+      - "10000:10000"
+    volumes:
+      # 所有文件（源码 + 配置 + 密码 + 备注 + 监控历史 + 版本备份）都存放在此目录
+      - /vol1/1000/docker/docker-update:/app
+      # 读取并管理宿主机 Docker 的关键挂载
+      - /var/run/docker.sock:/var/run/docker.sock
+      # v2.0：只读挂载宿主机根目录，用于采集 CPU / 内存 / 磁盘 / 网络指标与扫描 Compose 文件
+      # 只读是刻意的：面板不会修改宿主机任何系统文件
+      - /:/host:ro
+      # v3.0 Docker 管理可写根（Compose 栈 / 模板部署 / 容器配置 / 桌面快捷方式）。
+      # 注意：挂载点必须是 /store，与上面的 /host **平级**，
+      # 绝不能放到 /host/xxx 下面——父挂载是 ro，runc 创建子挂载点时会报
+      # "mkdirat ... read-only file system"，容器直接起不来（v2.1-r1 的坑）。
+      # 想装到别的盘/目录，请照格式改这一条的宿主路径，并把 STORE_HOST_ROOT 一起改掉
+      - /vol1/1000/docker:/store:rw
+    environment:
+      TZ: Asia/Shanghai
+      TZ_OFFSET: "8"
+      PORT: "10000"
+      SELF_CONTAINER_NAME: docker-update
+      HOST_IP: "192.168.1.110"
+      HOST_ROOT: "/host"
+      COMPOSE_ROOT: "/vol1/1000/docker"
+      STORE_ROOT: "/store"
+      STORE_HOST_ROOT: "/vol1/1000/docker"
+      DISK_PATHS: "/host,/host/vol1"
+      DAILY_CHECK_TIME: "03:00"
+      AUTO_UPDATE_ENABLED: "true"
+      INCLUDE_STOPPED: "true"
+      CHECK_ON_START: "true"
+      CLEANUP_IMAGES: "false"
+      VERIFY_START: "true"
+      EXCLUDE_WATCHTOWER_LABELS: "true"
+      BACKUP_ON_UPDATE: "true"
+      BACKUP_KEEP: "5"
+      CHECK_TIMEOUT: "300"
+      CHECK_RETRIES: "1"
+      SESSION_DAYS: "7"
+      # v2.0 监控与告警
+      MONITOR_ENABLED: "true"
+      SAMPLE_INTERVAL: "3"
+      REFRESH_INTERVAL: "5"
+      TREND_HOURS: "720"
+      SHOW_NAV: "true"
+      # WEBHOOK_URL: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx"
+      # NAV_URL: "http://192.168.1.110:8080"
+      # SOURCE_URL: "https://gitee.com/jinghui111/docker-center"
+      # 仅首次初始化生效，之后以 data/auth.json 为准，请在「设置 → 账户安全」修改密码
+      # WEB_USERNAME: "admin"
+      # WEB_PASSWORD: "ABab12.."
+    # 可选：给面板自身也加个内存上限（示例 384MB，与 docker-center 同量级）
+    # mem_limit: 384m
+    labels:
+      dockerupdate.self: "true"
+      com.centurylinklabs.watchtower.enable: "false"

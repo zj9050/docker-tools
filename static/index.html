@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f7fd">
+<title>DockerUpdate · Docker 管理增强面板</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236d4aff'/%3E%3Cpath d='M14 38h34v-6a7 7 0 0 0-7-7h-2v-4a5 5 0 0 0-10 0v4h-8a7 7 0 0 0-7 7v6z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<!-- v7.0.4：P4 柔灰雕塑 UI；镜像更新页新增「更新并重建容器」；v7.0.3 的终端/进程/Inspect/端口/路径修复保留 -->
+<div class="du-wall" id="duWall" aria-hidden="true"><i class="du-wall-a"></i><i class="du-wall-b"></i></div>
+
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-refresh" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.66 4.36A9 9 0 0 0 20.49 15"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 19V7M7 12l5-5 5 5M4 21h16"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-whale" viewBox="0 0 24 24"><path d="M3 14h18v-2a4 4 0 0 0-4-4h-1V6a3 3 0 0 0-6 0v2H9a4 4 0 0 0-4 4v2z"/><path d="M3 14v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M7 9h.01M11 9h.01M15 9h.01"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M15 17l5-5-5-5M20 12H9"/></symbol>
+  <symbol id="i-rollback" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><polyline points="3 3 3 8 8 8"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9 2 2-2 2 1 1-3 3-1-1-2 2"/></symbol>
+  <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M2 2l20 20M8.5 8.5a12 12 0 0 1 7 0M5 12a10 10 0 0 1 3-2M2 9a15 15 0 0 1 4-2.5M12 20h.01M16 16a6 6 0 0 0-8 0"/></symbol>
+  <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16v4zM14 6l4 4M13 7l2-2a2 2 0 0 1 3 0l1 1a2 2 0 0 1 0 3l-2 2"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20 12l-8 8-9-9V3h8l9 9z"/><circle cx="7.5" cy="7.5" r="1.2"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.1 8.6 22 9.5 17 14.4 18.2 21.3 12 18 5.8 21.3 7 14.4 2 9.5 8.9 8.6 12 2"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="7 14 11 10 15 13 20 6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="7 4 20 12 7 20 7 4"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></symbol>
+  <symbol id="i-network" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M12 8v4M5 16v-2h14v2"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 6h16v4H4zM4 12h16v4H4zM4 18h16v2H4z"/><path d="M8 8h.01M8 14h.01M8 20h.01"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></symbol>
+  <symbol id="i-hdd" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 13h20M6 17h.01M10 17h.01"/></symbol>
+  <symbol id="i-apps" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-folder-in" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/><path d="M12 11v6M9 14l3 3 3-3"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M3 9h18M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9M9 20v-6h6v6"/><path d="M5 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0"/></symbol>
+</svg>
+
+<div class="bg-motion" aria-hidden="true"><span class="bg-stars"></span><span class="bg-mesh"></span></div>
+<div class="bg-scan" aria-hidden="true"></div>
+<div class="aurora"><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span></div>
+
+<header class="topbar" id="topbar">
+  <div class="brand">
+    <div class="logo"><svg class="ic"><use href="#i-whale"/></svg></div>
+    <div class="brand-text">
+      <h1>DockerUpdate <span class="ver">v7.0.4</span></h1>
+      <p>Docker 管理增强面板</p>
+    </div>
+  </div>
+
+  <nav class="viewtabs" id="viewTabs" aria-label="主导航">
+    <button class="vtab" data-zone="docker" data-view="overview" title="概览"><svg class="ic"><use href="#i-chart"/></svg> <span>概览</span></button>
+    <button class="vtab" data-zone="docker" data-view="apps" title="应用"><svg class="ic"><use href="#i-apps"/></svg> <span>应用</span></button>
+    <button class="vtab" data-zone="docker" data-view="containers" title="容器"><svg class="ic"><use href="#i-box"/></svg> <span>容器</span></button>
+    <button class="vtab active" data-zone="docker" data-view="updates" title="更新"><svg class="ic"><use href="#i-upload"/></svg> <span>更新</span></button>
+    <button class="vtab" data-zone="docker" data-view="images" title="本地镜像"><svg class="ic"><use href="#i-image"/></svg> <span>本地镜像</span></button>
+    <button class="vtab" data-zone="docker" data-view="alerts" title="告警"><svg class="ic"><use href="#i-bell"/></svg> <span>告警</span></button>
+    <button class="vtab" data-zone="docker" data-view="system" title="系统联动"><svg class="ic"><use href="#i-shield"/></svg> <span>系统联动</span></button>
+  </nav>
+
+  <span class="nav-sep" aria-hidden="true"></span>
+
+  <div class="top-status">
+    <span class="pill" id="dockerPill"><i class="dot"></i><span>Docker 连接中</span></span>
+    <span class="meta-item">上次 <b id="lastCheck">—</b></span>
+    <span class="meta-item">下次 <b id="nextCheck">—</b></span>
+  </div>
+
+  <div class="top-actions" id="sbActions">
+    <a class="tbtn hidden" id="btnNav" href="#" target="_blank" rel="noopener" title="我的导航站" aria-label="我的导航站"><svg class="ic"><use href="#i-apps"/></svg></a>
+    <button class="tbtn" id="btnLogs" title="运行日志" aria-label="运行日志"><svg class="ic"><use href="#i-list"/></svg></button>
+    <button class="tbtn" id="btnSettings" title="设置" aria-label="设置"><svg class="ic"><use href="#i-sliders"/></svg></button>
+    <button class="tbtn" id="btnReload" title="重新读取面板数据（不会重载网页）" aria-label="重新读取面板数据（不会重载网页）"><svg class="ic"><use href="#i-refresh"/></svg></button>
+    <button class="tbtn" id="btnTheme" title="明暗主题" aria-label="明暗主题"><svg class="ic"><use href="#i-moon"/></svg></button>
+    <button class="tbtn danger" id="btnLogout" title="退出登录" aria-label="退出登录"><svg class="ic"><use href="#i-logout"/></svg></button>
+  </div>
+</header>
+
+<div class="content-col">
+<main class="wrap">
+  <!-- ===== v6.0：常驻运维状态带（纯数据，不含任何选项/按钮） ===== -->
+  <div class="statusbar" id="duStatusBar">
+    <span class="st-item"><i class="dot ok"></i> ENGINE <b id="sbEngine">—</b></span>
+    <span class="st-item">容器 <b id="sbContainers">—</b></span>
+    <span class="st-item">运行中 <b id="sbRunning">—</b></span>
+    <span class="st-item">可更新 <b id="sbUpdates">—</b></span>
+    <span class="st-item">镜像 <b id="sbImages">—</b></span>
+    <span class="st-item">卷 / 网络 <b id="sbVolNet">—</b></span>
+    <span class="st-item">上次巡检 <b id="sbLast">—</b></span>
+    <span class="st-item">下次巡检 <b id="sbNext">—</b></span>
+    <span class="st-item st-live"><i class="dot ok"></i> 监控中</span>
+  </div>
+
+  <!-- ===== v6.0：容器大模块的二级子导航（不是侧边栏，四个子页面各自独立） ===== -->
+  <div class="subtabs hidden" id="duSubtabs" aria-label="容器子模块">
+    <span class="subtabs-lead">容器管理 ›</span>
+    <button class="subtab active" data-sub="containers">容器列表</button>
+    <button class="subtab" data-sub="container-links">访问链接</button>
+    <button class="subtab" data-sub="container-snapshots">部署与快照</button>
+    <button class="subtab" data-sub="container-details">容器明细</button>
+    <button class="subtab" data-sub="container-ports">端口占用</button>
+    <button class="subtab" data-sub="container-mounts" title="把飞牛文件夹挂进容器（bind mount）">目录映射（文件夹）</button>
+    <button class="subtab" data-sub="container-symlinks" title="把飞牛 A 文件改名成容器认得的 B 文件名">文件软链接（A→B 改名）</button>
+  </div>
+
+  <!-- ===== v6.0-r18：更新大模块下的二级子导航（容器更新 / 镜像更新各自独立页面） ===== -->
+  <div class="subtabs hidden" id="duUpdateSubtabs" aria-label="更新子模块">
+    <span class="subtabs-lead">更新中心 ›</span>
+    <button class="subtab active" data-sub="updates">容器更新</button>
+    <button class="subtab" data-sub="image-updates">镜像更新</button>
+  </div>
+
+  <!-- ===== 概览 ===== -->
+  <div class="view hidden" id="viewOverview"><div id="overviewBody"></div>
+    <div id="proOverview"></div></div>
+
+  <!-- ===== 应用聚合 ===== -->
+  <div class="view hidden" id="viewApps">
+    <div class="page-head"><div><h2>应用聚合</h2><p>按 Compose 项目把多个容器聚合成一个应用，批量启停、整体看资源</p></div>
+      <div class="head-actions"><div class="layout-switch" role="group" aria-label="排列方式"><button class="icon-btn layout-btn" data-layout-btn data-target="apps" data-mode="list" title="列表" aria-label="列表"><svg viewBox="0 0 20 20" class="ic" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 4h11M7 10h11M7 16h11"/><circle cx="3" cy="4" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="10" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg></button><button class="icon-btn layout-btn" data-layout-btn data-target="apps" data-mode="small" title="小卡片" aria-label="小卡片"><svg viewBox="0 0 20 20" class="ic" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="12" y="2" width="6" height="6" rx="1"/><rect x="2" y="12" width="6" height="6" rx="1"/><rect x="12" y="12" width="6" height="6" rx="1"/></svg></button><button class="icon-btn layout-btn" data-layout-btn data-target="apps" data-mode="medium" title="中卡片" aria-label="中卡片"><svg viewBox="0 0 20 20" class="ic" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="7" height="14" rx="1.5"/><rect x="11" y="3" width="7" height="14" rx="1.5"/></svg></button></div>
+        <button class="btn ghost" id="btnAppsRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button></div></div>
+    <div id="appsBody"></div>
+  </div>
+
+  <!-- ===== 容器 ===== -->
+  <div class="view hidden" id="viewContainers">
+    <div class="page-head"><div><h2>容器管理</h2><p>实时 CPU / 内存 / 网络，一键启停重启暂停，详情里看日志与资源曲线</p></div>
+      <div class="head-actions"><div class="layout-switch" role="group" aria-label="排列方式"><button class="icon-btn layout-btn" data-layout-btn data-target="containers" data-mode="list" title="列表" aria-label="列表"><svg viewBox="0 0 20 20" class="ic" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 4h11M7 10h11M7 16h11"/><circle cx="3" cy="4" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="10" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg></button><button class="icon-btn layout-btn" data-layout-btn data-target="containers" data-mode="small" title="小卡片" aria-label="小卡片"><svg viewBox="0 0 20 20" class="ic" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="12" y="2" width="6" height="6" rx="1"/><rect x="2" y="12" width="6" height="6" rx="1"/><rect x="12" y="12" width="6" height="6" rx="1"/></svg></button><button class="icon-btn layout-btn" data-layout-btn data-target="containers" data-mode="medium" title="中卡片" aria-label="中卡片"><svg viewBox="0 0 20 20" class="ic" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="7" height="14" rx="1.5"/><rect x="11" y="3" width="7" height="14" rx="1.5"/></svg></button></div>
+        <button class="btn ghost" id="btnContainersRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button>
+      </div></div>
+    <div class="toolbar glass compact">
+      <div class="search"><svg class="ic"><use href="#i-search"/></svg><input id="containerSearch" name="du-container-q" type="search" placeholder="搜索容器 / 备注 / 镜像…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other"></div>
+      <div class="filters" id="containerFilters">
+        <button class="chip active" data-cf="all">全部</button>
+        <button class="chip" data-cf="running">运行中</button>
+        <button class="chip" data-cf="stopped">已停止</button>
+        <button class="chip" data-cf="abnormal">异常优先</button>
+      </div>
+    </div>
+    <div id="containersBody"></div>
+  </div>
+
+  <!-- ===== v6.0 · 子模块 1：容器访问链接（独立页面） ===== -->
+  <div class="view hidden" id="viewContainerLinks">
+    <div class="page-head"><div><h2>容器访问链接</h2>
+      <p>每个容器的内网 / 外网地址单独设置；自动模式按当前访问地址与内网可达性选择</p></div>
+      <div class="head-actions"><button class="btn ghost" id="btnLinksRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button></div></div>
+    <div id="linkModeBar" class="link-mode-bar glass"></div>
+    <div class="panel glass"><div class="panel-head"><h3><svg class="ic"><use href="#i-link"/></svg> 逐容器链接设置</h3>
+      <span class="sub" id="linkListCount">—</span></div>
+      <div id="linkSettingsList"></div></div>
+  </div>
+
+  <!-- ===== v6.0 · 子模块 2：部署与快照明细（独立页面） ===== -->
+  <div class="view hidden" id="viewContainerSnapshots">
+    <div class="page-head"><div><h2>部署与快照明细</h2>
+      <p>所有容器的部署日期、运行日期、上次快照备份与更新策略</p></div>
+      <div class="head-actions"><button class="btn ghost" id="btnSnapshotsRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button></div></div>
+    <div id="snapshotsBody"></div>
+  </div>
+
+  <!-- ===== v6.0 · 子模块 3：容器明细（独立页面） ===== -->
+  <div class="view hidden" id="viewContainerDetails">
+    <div class="page-head"><div><h2>容器明细</h2>
+      <p>端口 / 标签 / 创建时间 / CPU 与内存 / 异常红点</p></div>
+      <div class="head-actions"><button class="btn ghost" id="btnDetailsRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button></div></div>
+    <div id="proContainers"></div>
+  </div>
+
+  <!-- ===== v6.0-r19 · 子模块 4：整机端口占用（按端口聚合，识别容器/镜像） ===== -->
+  <div class="view hidden" id="viewContainerPorts">
+    <div class="page-head"><div><h2>端口占用</h2>
+      <p>每个端口一行，自动识别占用它的容器 / 镜像 / 宿主进程；连接状态不再刷屏，可单独查看</p></div>
+      <div class="head-actions"><button class="btn ghost" id="btnPortsRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button></div></div>
+    <div class="toolbar glass compact ports-toolbar">
+      <div class="search"><svg class="ic"><use href="#i-search"/></svg><input id="portsSearch" type="search" placeholder="搜索端口 / 容器 / 镜像 / 进程…" autocomplete="off" data-lpignore="true" data-form-type="other"></div>
+      <div class="filters" id="portsFilters">
+        <button class="chip active" data-pf="all">监听端口</button>
+        <button class="chip" data-pf="container">容器映射</button>
+        <button class="chip" data-pf="host">宿主进程</button>
+        <button class="chip" data-pf="conflict">疑似冲突</button>
+        <button class="chip" data-pf="connections">查看连接态</button>
+      </div>
+      <div class="ports-check">
+        <input id="portsCheckPort" class="input" type="number" min="1" max="65535" placeholder="端口号" aria-label="要检查的端口号">
+        <select id="portsCheckProto" class="input" aria-label="协议"><option value="tcp">TCP</option><option value="udp">UDP</option></select>
+        <button class="btn ghost slim" id="btnPortsCheck">检查端口</button>
+      </div>
+    </div>
+    <div class="ports-kpi" id="portsKpi"></div>
+    <div id="portsCheckResult"></div>
+    <div class="panel glass"><div class="panel-head"><h3><svg class="ic"><use href="#i-link"/></svg> 端口明细</h3>
+      <span class="sub" id="portsCount">—</span></div>
+      <div id="portsBody"></div></div>
+    <div class="ports-note" id="portsNote"></div>
+  </div>
+
+  <!-- ===== 子模块 6：容器目录映射（飞牛文件夹 → 容器内自定义路径） ===== -->
+  <div class="view hidden" id="viewContainerMounts">
+    <div class="page-head"><div><h2>容器目录映射</h2><p class="sub du-mounts-hint">这里是<b>文件夹级</b>映射：把飞牛上的整个文件夹挂进容器指定路径。如果你要的是「把飞牛的 <b>A 文件</b> 用容器认得的 <b>B 文件名</b> 放进去」（改名 / 软链接 / 周期同步），请到<button class="btn ghost slim" id="btnGotoSymlinks" type="button"><svg class="ic"><use href="#i-link"/></svg> 文件软链接（A→B 改名）</button>。</p>
+      <p>把飞牛上的任意文件夹挂进容器里指定路径，两端都可自定义；保存不碰容器，核对计划后再应用重建</p></div>
+      <div class="head-actions"><button class="btn ghost" id="btnMountRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button></div></div>
+    <div class="toolbar glass compact mounts-toolbar">
+      <label class="mounts-pick"><span>当前容器</span>
+        <select id="mountsContainer" class="input" aria-label="选择容器"></select></label>
+      <span class="modal-spacer"></span>
+      <span class="sub" id="mountsDirty">已与后端同步</span>
+      <button class="btn ghost slim" id="btnMountSave"><svg class="ic"><use href="#i-check"/></svg> 保存配置</button>
+      <button class="btn ghost slim" id="btnMountPlan"><svg class="ic"><use href="#i-info"/></svg> 查看重建计划</button>
+      <button class="btn primary slim" id="btnMountApply"><svg class="ic"><use href="#i-refresh"/></svg> 应用并重建</button>
+    </div>
+    <div class="mounts-kpi" id="mountsKpi"></div>
+    <div id="mountsTemplateBox"></div>
+    <div id="mountsTable"></div>
+  </div>
+
+  <!-- ===== 子模块 7：文件软链接（飞牛 A 文件 → 容器内改名成 B 文件） ===== -->
+  <div class="view hidden" id="viewContainerSymlinks">
+    <div class="page-head"><div><h2>文件软链接</h2>
+      <p>把飞牛上的 A 文件以容器认得的 B 文件名放进挂载目录；路径与文件名都可自定义，还能按周期自动重建</p></div>
+      <div class="head-actions"><button class="btn ghost" id="btnSymRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button></div></div>
+    <div class="toolbar glass compact mounts-toolbar">
+      <span class="sub" id="symDirty">已与后端同步</span>
+      <span class="modal-spacer"></span>
+      <button class="btn ghost slim" id="btnSymAdd"><svg class="ic"><use href="#i-plus"/></svg> 新增规则</button>
+      <button class="btn ghost slim" id="btnSymRunAll"><svg class="ic"><use href="#i-bolt"/></svg> 立即执行全部</button>
+      <button class="btn ghost slim" id="btnSymMount"><svg class="ic"><use href="#i-folder"/></svg> 一键挂载进容器</button>
+      <button class="btn primary slim" id="btnSymSave"><svg class="ic"><use href="#i-check"/></svg> 保存规则</button>
+    </div>
+    <div class="mounts-kpi" id="symKpi"></div>
+    <div id="symTable"></div>
+    <div id="symHistory"></div>
+    <p class="tiny" style="margin-top:12px">软链接方式要求 B 与 A 在同一目录（这样容器内挂载该目录后链接一定能解析）；跨目录请选「同步副本」。A 不在可写根下时需把宿主机根目录挂到 <code>/host</code> 才能读取。B 已存在且是真实文件时一律拒绝覆盖，不会误删数据。</p>
+  </div>
+
+  <!-- ===== 更新中心（v1.x 原有功能） ===== -->
+  <div class="view" id="viewUpdates">
+    <section class="hero">
+      <div class="hero-text">
+        <div class="eyebrow"><i class="spark"></i> DAILY IMAGE WATCH · 每日镜像巡检</div>
+        <p class="hero-lead">自动比对镜像版本，发现新版即时提示；更新前自动备份，随时一键回退。检测到新版本后才会出现「立即更新」按钮，自动更新已改为开关。</p>
+      </div>
+      <div class="hero-actions">
+        <button class="btn primary" id="btnCheckAll"><svg class="ic"><use href="#i-refresh"/></svg> 检查全部</button>
+        <button class="btn ghost" id="btnDaily"><svg class="ic"><use href="#i-bolt"/></svg> 执行每日任务</button>
+      </div>
+    </section>
+
+    <section class="stats" id="stats"></section>
+
+    <section class="toolbar glass">
+      <div class="search">
+        <svg class="ic"><use href="#i-search"/></svg>
+        <input id="search" name="du-search-q" type="search" placeholder="搜索应用 / 容器 / 镜像 / 备注…"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other">
+      </div>
+      <div class="filters" id="filters">
+        <button class="chip active" data-filter="all">全部</button>
+        <button class="chip" data-filter="update">可更新</button>
+        <button class="chip" data-filter="auto">自动更新</button>
+        <button class="chip" data-filter="hold">暂不更新</button>
+        <button class="chip" data-filter="stopped">已停止</button>
+        <button class="chip" data-filter="noted">已备注</button>
+      </div>
+      <div class="tool-right">
+        <select id="sort" class="select">
+          <option value="update">有更新优先</option>
+          <option value="note">有备注优先</option>
+          <option value="name">按显示名</option>
+          <option value="status">按运行状态</option>
+          <option value="checked">按检测时间</option>
+        </select>
+        <span class="count" id="visibleCount">—</span>
+      </div>
+    </section>
+
+    <div class="progress glass hidden" id="progress">
+      <span class="spinner"></span>
+      <div class="progress-body">
+        <div class="progress-text" id="progressText">准备中…</div>
+        <div class="bar"><i id="progressBar" style="width:0%"></i></div>
+      </div>
+      <span class="progress-num" id="progressNum"></span>
+    </div>
+
+    <section id="list" class="list"></section>
+    <div id="empty" class="empty glass hidden">
+      <svg class="ic"><use href="#i-box"/></svg><h3>没有匹配的容器</h3><p>换个关键词或筛选条件试试。</p>
+    </div>
+  </div>
+
+  <!-- ===== v6.0-r18 · 更新子模块 2：镜像更新（独立页面，只更新镜像不重建容器） ===== -->
+  <div class="view hidden" id="viewImageUpdates">
+    <div class="page-head"><div><h2>镜像更新</h2><p>比对远端 digest，可只拉取镜像，也可拉取后按原配置重建使用该镜像的容器</p></div>
+      <div class="head-actions">
+        <button class="btn ghost" id="btnIuRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button>
+        <button class="btn ghost" id="btnIuCheckSel"><svg class="ic"><use href="#i-search"/></svg> 检查选中</button>
+        <button class="btn primary" id="btnIuCheckAll"><svg class="ic"><use href="#i-refresh"/></svg> 检查全部镜像</button>
+        <button class="btn primary hidden" id="btnIuPullSel" title="当前没有检测到可更新的镜像"><svg class="ic"><use href="#i-download"/></svg> 更新选中</button>
+        <button class="btn primary hidden" id="btnIuRebuildSel" title="当前没有检测到可更新的镜像"><svg class="ic"><use href="#i-refresh"/></svg> 更新并重建容器</button>
+      </div></div>
+    <div class="notice small-notice" id="iuLimits"><svg class="ic"><use href="#i-shield"/></svg><span>两种模式：①「更新选中」只拉取镜像、不重建容器，运行中的容器仍用旧镜像；②「更新并重建」拉取后按原配置重建使用该镜像的容器，先备份、保留端口/环境变量/卷/网络/标签，健康检查不通过自动回退，会短暂中断服务。只有检测到可更新版本才显示这两个按钮。</span></div>
+    <div id="iuKpi"></div>
+    <div class="toolbar glass compact">
+      <div class="search"><svg class="ic"><use href="#i-search"/></svg><input id="iuSearch" name="du-iu-q" type="search" placeholder="搜索镜像 / 标签 / ID…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other"></div>
+      <div class="filters" id="iuFilters">
+        <button class="chip active" data-iu-filter="all">全部</button>
+        <button class="chip" data-iu-filter="outdated">可更新</button>
+        <button class="chip" data-iu-filter="unknown_digest">可拉取刷新</button>
+        <button class="chip" data-iu-filter="latest">已最新</button>
+        <button class="chip" data-iu-filter="skipped">跳过</button>
+        <button class="chip" data-iu-filter="used">被容器使用</button>
+      </div>
+      <span class="count" id="iuCount">—</span>
+      <label class="checkline" title="默认只在拉取后镜像 ID 真的变化时才重建容器"><input type="checkbox" id="iuForceRebuild"> 镜像无变化也重建</label>
+      <button class="btn ghost slim" id="btnIuClear" title="清空检测记录">清空记录</button>
+    </div>
+    <div id="iuBody"></div>
+  </div>
+
+  <!-- ===== 本地镜像 ===== -->
+  <div class="view hidden" id="viewImages">
+    <div class="page-head"><div><h2>本地镜像</h2><p>占用、导出、批量删除与清理悬空镜像；也可从仓库拉取新镜像</p></div>
+      <div class="head-actions">
+        <button class="btn ghost" id="btnImagesRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button>
+        <button class="btn ghost" id="btnGotoImageUpdates"><svg class="ic"><use href="#i-upload"/></svg> 镜像更新</button>
+        <button class="btn ghost" id="btnPullImage"><svg class="ic"><use href="#i-download"/></svg> 拉取镜像</button>
+        <button class="btn ghost" id="btnPruneImages"><svg class="ic"><use href="#i-trash"/></svg> 清理悬空</button>
+        <button class="btn ghost" id="btnRemoveUnusedImages"><svg class="ic"><use href="#i-trash"/></svg> 删除未使用镜像</button>
+        <button class="btn danger ghost" id="btnDeleteImages"><svg class="ic"><use href="#i-trash"/></svg> 批量删除选中</button>
+        <button class="btn primary" id="btnExportImages"><svg class="ic"><use href="#i-download"/></svg> 导出选中</button>
+      </div></div>
+    <div class="toolbar glass compact">
+      <div class="search"><svg class="ic"><use href="#i-search"/></svg><input id="imageSearch" name="du-image-q" type="search" placeholder="搜索镜像 / 标签 / ID…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other"></div>
+      <label class="checkline"><input type="checkbox" id="imageDanglingOnly"> 只看悬空镜像</label>
+      <label class="checkline"><input type="checkbox" id="imageUnusedOnly"> 只看未使用</label>
+    </div>
+    <div id="imagesBody"></div>
+  </div>
+
+
+  <!-- ===== 告警 ===== -->
+  <div class="view hidden" id="viewAlerts">
+    <div class="page-head"><div><h2>告警设置</h2><p>CPU / 内存 / 磁盘阈值、容器生命周期、消息推送内容逐项可选与去重间隔</p></div></div>
+    <div id="netWatchBody"></div>
+    <div id="alertsBody"></div>
+    <div id="alertChannels"></div>
+  </div>
+
+  <!-- ===== v3.1：系统联动（Compose 栈 / 应用模板模块已按要求移除） ===== -->
+  <div class="view hidden" id="viewSystem"><div id="proSystem"></div></div>
+
+  <footer class="footer">
+    <span>DockerUpdate v7.0.4 · 单一 Docker 管理分区 · 配置、密码、备注、监控历史、版本备份与系统联动数据保存在 <code>/vol1/1000/docker/docker-update/data</code></span>
+    <span id="footSchedule">每日 03:00 自动检测</span>
+  </footer>
+
+  <div class="view hidden" id="viewSettings">
+    <div class="page-head"><div><h2>设置</h2>
+      <p>页面内分组导航 + 单组聚焦：一次只显示一组；这是设置页的二级导航，不是全站侧栏</p></div>
+      <div class="head-actions">
+        <button class="btn ghost" id="btnSettingsBack"><svg class="ic"><use href="#i-rollback"/></svg> 返回</button>
+      </div></div>
+    <div class="settings-layout">
+      <aside class="settings-rail" id="settingsRail">
+        <label class="rail-search"><svg class="ic"><use href="#i-search"/></svg><input id="settingsSearch" type="search" placeholder="筛选分组…" autocomplete="off" spellcheck="false" aria-label="筛选设置分组"></label>
+        <div class="rail-ttl">CONFIG / <span id="railCount">9</span> GROUPS</div>
+        <nav class="rail-list" id="railList" aria-label="设置分组"></nav>
+        <div class="rail-empty hidden" id="railEmpty">没有匹配的分组</div>
+        <div class="rail-tip">一次只显示一组 · 分组只是视图，配置仍是一份</div>
+      </aside>
+      <div class="settings-page glass">
+      <div class="settings-group-head" id="settingsGroupHead"></div>
+      <div class="settings-body" id="settingsBody">
+    <div class="field-title">账户安全</div>
+    <div class="account-line"><svg class="ic"><use href="#i-key"/></svg> 当前账号 <b id="curUser">admin</b></div>
+    <div class="field"><label>当前密码</label><input type="password" id="oldPwd" class="input" autocomplete="current-password"></div>
+    <div class="field-row">
+      <div class="field"><label>新密码</label><input type="password" id="newPwd" class="input" autocomplete="new-password" placeholder="至少 8 位，含字母和数字"></div>
+      <div class="field"><label>确认新密码</label><input type="password" id="confirmPwd" class="input" autocomplete="new-password"></div>
+    </div>
+    <button class="btn primary wide" id="btnChangePwd"><svg class="ic"><use href="#i-check"/></svg> 修改密码</button>
+    <p class="tiny">修改后其它设备与浏览器会话立即失效，当前页面会自动续期。</p>
+
+    <div class="field-title">每日巡检</div>
+    <div class="field"><label>每日自动检测时间</label><input type="time" id="setTime" data-du-time class="input" autocomplete="off">
+      <small>到点后全量检测，并对「自动更新」的容器执行重建更新。</small></div>
+    <div class="field-row">
+      <div class="field"><label>检测超时（秒）</label><input type="number" id="setTimeout" class="input" min="30" max="900" step="30"></div>
+      <div class="field"><label>失败重试次数</label><input type="number" id="setRetries" class="input" min="0" max="3" step="1"></div>
+    </div>
+    <div class="notice small-notice"><svg class="ic"><use href="#i-wifi-off"/></svg><span>仓库不可达时，面板会自动尝试加速源代拉并重新检测；个别私有镜像会中性跳过而不写错误信息。飞牛桌面自身拉镜像若仍失败，需在 NAS 的 Docker daemon 上配置代理或镜像加速。</span></div>
+
+    <div class="field-title">资源监控</div>
+    <label class="switch"><input type="checkbox" data-key="monitor_enabled"><span class="track"></span><span>开启资源采样 <em>每 3 秒采集一次容器 CPU / 内存 / 网络 / 磁盘 IO</em></span></label>
+    <div class="field-row">
+      <div class="field"><label>采样间隔（秒）</label><input type="number" id="setSample" class="input" min="3" max="60" step="1"></div>
+      <div class="field"><label>界面刷新（秒）</label><input type="number" id="setRefresh" class="input" min="3" max="60" step="1"></div>
+    </div>
+    <label class="switch"><input type="checkbox" data-key="show_nav"><span class="track"></span><span>显示我的导航站 <em>顶栏右侧的快捷链接</em></span></label>
+
+    <div class="field-title">名称备注</div>
+    <div class="notice small-notice"><svg class="ic"><use href="#i-tag"/></svg><span>给容器起个好记的显示名和说明，只影响界面显示与搜索，不改 Docker 容器名、不影响更新策略。点卡片标题旁的铅笔即可编辑。</span></div>
+    <div id="noteList" class="note-list"></div>
+    <button class="btn ghost wide slim" id="btnRestoreAllNames"><svg class="ic"><use href="#i-rollback"/></svg> 恢复全部原名</button>
+    <p class="tiny">恢复原名只清除备注，可在提示里点「撤销」找回；想退回旧版本请用卡片上的「快速回退」。</p>
+
+    <div class="field-title">版本备份与回退</div>
+    <label class="switch"><input type="checkbox" data-key="backup_on_update"><span class="track"></span><span>更新 / 回退前自动备份 <em>保存容器完整配置与旧镜像 ID，用于一键回退</em></span></label>
+    <div class="field"><label>每个容器保留备份份数</label><input type="number" id="setBackupKeep" class="input" min="1" max="20" step="1"></div>
+
+    <div class="field-title">更新后健康检查 <span class="tiny">v6.0 新增</span></div>
+    <div class="notice small-notice"><svg class="ic"><use href="#i-shield"/></svg><span>容器重建后先确认服务真的起来了：默认只校验「运行中」，也可改为 HTTP / TCP 探测。探测不通过且开启自动回退时，面板会立刻恢复到更新前的版本并推送通知。</span></div>
+    <label class="switch"><input type="checkbox" data-key="health_enabled"><span class="track"></span><span>启用更新后健康检查 <em>不影响「快速回退」与原有备份逻辑</em></span></label>
+    <label class="switch"><input type="checkbox" data-key="health_auto_rollback"><span class="track"></span><span>健康检查失败自动回退 <em>需要「更新前自动备份」保持开启</em></span></label>
+    <div class="field-row">
+      <div class="field"><label>探测方式</label>
+        <select class="input" id="setHealthProbe">
+          <option value="running">仅容器运行中（推荐）</option>
+          <option value="http">HTTP 请求</option>
+          <option value="tcp">TCP 端口可连接</option>
+        </select></div>
+      <div class="field"><label>宿主机端口（0 = 自动取第一个映射端口）</label><input type="number" id="setHealthPort" class="input" min="0" max="65535" step="1"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>HTTP 探测路径</label><input id="setHealthPath" class="input" placeholder="/"></div>
+      <div class="field"><label>启动等待（秒）</label><input type="number" id="setHealthWait" class="input" min="0" max="120" step="1"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>单次超时（秒）</label><input type="number" id="setHealthTimeout" class="input" min="1" max="30" step="1"></div>
+      <div class="field"><label>失败重试次数</label><input type="number" id="setHealthRetries" class="input" min="0" max="10" step="1"></div>
+    </div>
+    <p class="tiny">HTTP 探测把 4xx（例如要求登录）视为「服务有响应」，只有连接失败、超时和 5xx 才算异常；没有端口映射时自动降级为运行状态检查。</p>
+
+    <div class="field-title">检测与更新</div>
+    <label class="switch"><input type="checkbox" data-key="auto_update"><span class="track"></span><span>允许自动更新总开关 <em>仅作用于已设为「自动更新」的容器</em></span></label>
+    <label class="switch"><input type="checkbox" data-key="include_stopped"><span class="track"></span><span>包含已停止的容器 <em>关闭后只巡检运行中的容器</em></span></label>
+    <label class="switch"><input type="checkbox" data-key="check_on_start"><span class="track"></span><span>启动时立即检测 <em>打开面板前先跑一次全量巡检</em></span></label>
+    <label class="switch"><input type="checkbox" data-key="verify_start"><span class="track"></span><span>更新后校验启动 <em>新容器异常退出时自动回滚</em></span></label>
+    <label class="switch"><input type="checkbox" data-key="cleanup_images"><span class="track"></span><span>更新后清理旧镜像 <em>开启后将无法快速回退，建议保持关闭</em></span></label>
+    <label class="switch"><input type="checkbox" data-key="exclude_watchtower_labels"><span class="track"></span><span>兼容 watchtower 排除标签 <em>enable=false 的容器自动跳过</em></span></label>
+
+    <div class="field-title">私有仓库认证（可选）</div>
+    <div class="field"><textarea id="regAuth" class="input mono" rows="5" spellcheck="false" placeholder='{"registry.example.com": {"username": "xxx", "password": "xxx"}}'></textarea>
+      <small>支持简单字典或 docker config.json 的 <code>auths</code> 结构；留空表示只用公开仓库。</small></div>
+    <div class="notice"><svg class="ic"><use href="#i-shield"/></svg><span>挂载 Docker Socket 等同管理员权限，请勿暴露到公网。忘记密码时删除 <code>data/auth.json</code> 并重启容器即可恢复默认凭据。</span></div>
+    <div class="field-title">面板数据备份 <span class="tiny">（原「备份恢复」模块已并入这里）</span></div>
+    <div class="notice small-notice"><svg class="ic"><use href="#i-archive"/></svg><span>导出 zip 包含面板设置、策略、备注、检测结果、版本快照与扫描到的 Compose 文件；不包含登录密码与业务数据卷。</span></div>
+    <div class="pro-inline pro-root-row du-file-row">
+      <label class="btn ghost slim du-file-btn"><svg class="ic"><use href="#i-upload"/></svg> 选择文件
+        <input type="file" id="bkRestoreFile" accept=".zip" hidden></label>
+      <span class="du-file-name" id="bkRestoreFileName">未选择文件</span>
+    </div>
+    <div class="field"><label>Compose 文件恢复位置（可选）</label>
+      <div class="pro-inline pro-root-row">
+        <input id="bkRestoreDirSetting" class="input" placeholder="/vol1/1000/docker/compose-stacks（留空则不写回）">
+        <button class="btn ghost slim" id="bkRestoreBrowse">📁 浏览</button>
+      </div>
+      <small>写回目录必须在 <code>/vol1/1000/docker</code> 可写根下。</small></div>
+    <label class="switch"><input type="checkbox" id="bkRestoreComposeSetting"><span class="track"></span><span>同时把备份里的 Compose 文件写回该目录</span></label>
+    <button class="btn ghost wide" id="bkExportSetting"><svg class="ic"><use href="#i-download"/></svg> 下载完整备份 zip</button>
+    <button class="btn ghost wide slim" id="bkImportSetting"><svg class="ic"><use href="#i-upload"/></svg> 上传并恢复面板数据</button>
+    <p class="tiny">恢复不会改变当前登录密码；建议先导出一份当前配置。容器部署 / 运行 / 快照日期明细已移到「容器」页底部。</p>
+
+    <div id="bgWallSec" class="hidden">
+    <div class="field-title">动态背景 · 线条主题</div>
+    <label class="switch"><input type="checkbox" id="bgOn"><span class="track"></span><span>启用线条动态背景 <em>关闭后回到极简纯色底；细网格与曲线只在留白处淡显，卡片与表格仍是纯色实底</em></span></label>
+    <div class="field-row">
+      <div class="field"><label>图片来源</label>
+        <select id="bgPick" class="input">
+          <option value="auto">线条主题 · 跟随明暗自动切换（推荐）</option>
+          <option value="lines-light">线条主题 · 只用浅色</option>
+          <option value="lines-dark">线条主题 · 只用深色</option>
+          <option value="photo-light">抽象壁纸 · 浅色（旧版）</option>
+          <option value="photo-dark">抽象壁纸 · 深色（旧版）</option>
+          <option value="custom">我上传的本地图片</option>
+          <option value="url">自定义图片网址</option>
+        </select></div>
+      <div class="field"><label>动态方式</label>
+        <select id="bgMotion" class="input">
+          <option value="flow">线条流动（推荐）</option>
+          <option value="ken">缓慢推镜（缩放 + 平移）</option>
+          <option value="fade">双图淡入淡出轮播</option>
+          <option value="still">静止不动</option>
+        </select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>动画速度</label>
+        <select id="bgSpeed" class="input">
+          <option value="72">很慢 · 72 秒</option>
+          <option value="48">慢 · 48 秒</option>
+          <option value="28">适中 · 28 秒</option>
+          <option value="16">较快 · 16 秒</option>
+        </select></div>
+      <div class="field"><label>显示强度</label>
+        <select id="bgStrength" class="input">
+          <option value="0.22">淡 · 22%</option>
+          <option value="0.40">中 · 40%（推荐）</option>
+          <option value="0.65">浓 · 65%</option>
+        </select></div>
+    </div>
+    <div class="field"><label>自定义图片网址</label><input id="bgUrl" class="input" placeholder="https://…/wallpaper.jpg（选择「自定义图片网址」后生效）"></div>
+    <div class="pro-inline pro-root-row">
+      <button class="btn ghost slim" id="bgPickFile">🖼️ 选择本地图片</button>
+      <span class="du-file-name" id="bgFileName">未选择文件</span>
+      <input type="file" id="bgFile" accept="image/*" hidden>
+    </div>
+    <button class="btn primary wide slim" id="btnBgSave"><svg class="ic"><use href="#i-check"/></svg> 应用背景设置</button>
+    <p class="tiny">内置浅 / 深两张「细网格 + 流动曲线」线条图，随包附带、无需联网；也可选旧版抽象壁纸、自定义网址或本地图片（压缩后只存这台浏览器，不上传、不写 NAS）。动画只作用在独立背景层且只改 transform，内容层零循环动画，不会重现「整页闪」；系统开启「减少动态效果」时自动静止。</p>
+    </div>
+      </div>
+    <div class="settings-foot">
+      <span class="sub" id="settingsFootHint">当前组：账户安全 · 9 组共用一份配置，保存即写入 <code>data/state.json</code>。</span>
+      <button class="btn ghost slim" id="btnSettingsResetGroup"><svg class="ic"><use href="#i-rollback"/></svg> 重置本组</button>
+      <button class="btn ghost slim" id="btnSettingsDiscard"><svg class="ic"><use href="#i-rollback"/></svg> 放弃修改</button>
+      <button class="btn primary" id="btnSaveSettings"><svg class="ic"><use href="#i-check"/></svg> 保存设置</button>
+      <button class="btn ghost slim" id="btnLogout2"><svg class="ic"><use href="#i-logout"/></svg> 退出登录</button>
+    </div>
+    </div>
+    </div>
+  </div><!-- /viewSettings -->
+
+  <!-- ===== 运行日志（v6.0：一行一条的列表 + 保留时长自动清理） ===== -->
+  <div class="view hidden" id="viewLogs">
+    <div class="page-head"><div><h2>运行日志</h2>
+      <p>面板内任何动作都按时间倒序记录，一行一条；到期日志自动清除</p></div>
+      <div class="head-actions">
+        <label class="log-retention">日志保留
+          <select id="logRetention" class="select">
+            <option value="1">1 天</option><option value="3">3 天</option>
+            <option value="7" selected>7 天</option><option value="14">14 天</option>
+            <option value="30">30 天</option><option value="90">90 天</option>
+            <option value="365">1 年</option>
+          </select>
+          <button class="btn primary slim" id="btnLogRetentionSave">保存时长</button>
+        </label>
+        <button class="btn ghost" id="btnLogsBack"><svg class="ic"><use href="#i-rollback"/></svg> 返回</button>
+        <button class="btn ghost" id="btnLogsRefresh"><svg class="ic"><use href="#i-refresh"/></svg> 刷新</button>
+      </div></div>
+    <div class="panel glass logs-page">
+      <div class="panel-head"><h3><svg class="ic"><use href="#i-list"/></svg> 操作记录</h3>
+        <span class="sub" id="logCount">—</span></div>
+      <div class="log-rows-head"><span>时间</span><span>类型</span><span>对象</span><span>结果 / 说明</span></div>
+      <div id="logList" class="log-list"></div>
+    </div>
+  </div>
+</main>
+</div><!-- /content-col -->
+
+<div class="scrim" id="scrim"></div>
+
+<!-- ===== 容器详情抽屉 ===== -->
+<aside class="drawer glass wide-drawer" id="containerDrawer">
+  <div class="drawer-head">
+    <div><h3 id="cdTitle">容器详情</h3><p id="cdSub">—</p></div>
+    <button class="icon-btn" data-close><svg class="ic"><use href="#i-close"/></svg></button>
+  </div>
+  <div class="drawer-tabs" id="cdTabs">
+    <button class="dtab active" data-dtab="perf">资源曲线</button>
+    <button class="dtab" data-dtab="logs">日志</button>
+    <button class="dtab" data-dtab="config">配置</button>
+    <button class="dtab" data-dtab="mounts">挂载 / 网络</button>
+    <button class="dtab" data-dtab="terminal">Web 终端</button>
+    <button class="dtab" data-dtab="process">进程</button>
+    <button class="dtab" data-dtab="inspect">Inspect JSON</button>
+  </div>
+  <div class="drawer-body" id="cdBody"></div>
+  <div class="drawer-foot" id="cdFoot"></div>
+</aside>
+
+
+
+<!-- ===== 通用弹窗 ===== -->
+<div class="modal-mask hidden" id="noteModal">
+  <div class="modal-card glass" role="dialog" aria-modal="true" aria-labelledby="noteTitle">
+    <div class="modal-head"><div><h3 id="noteTitle">编辑名称备注</h3><p>原容器名 <code id="noteOrig">—</code></p></div>
+      <button class="icon-btn" id="btnNoteClose" title="关闭"><svg class="ic"><use href="#i-close"/></svg></button></div>
+    <div class="modal-body">
+      <div class="field"><label>备注名（显示名）</label><input id="noteAlias" class="input" maxlength="40" placeholder="例如：家庭助手 HA / 影音库 Jellyfin">
+        <small>留空则继续显示原容器名；最多 40 个字。</small></div>
+      <div class="field"><label>备注说明（可选）</label><textarea id="noteMemo" class="input" rows="3" maxlength="200" placeholder="例如：客厅设备联动，数据库别自动更新"></textarea>
+        <small>最多 200 个字，会显示在卡片上，也能被搜索到。</small></div>
+      <div class="notice small-notice"><svg class="ic"><use href="#i-info"/></svg><span>备注保存在 <code>data/state.json</code>，容器重建后名字不变就不会丢。</span></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost slim" id="btnNoteRestore"><svg class="ic"><use href="#i-rollback"/></svg> 恢复原名</button>
+      <span class="modal-spacer"></span><button class="btn ghost slim" id="btnNoteCancel">取消</button>
+      <button class="btn primary slim" id="btnNoteSave"><svg class="ic"><use href="#i-check"/></svg> 保存备注</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask hidden" id="genericModal">
+  <div class="modal-card glass" role="dialog" aria-modal="true" aria-labelledby="gmTitle">
+    <div class="modal-head"><div><h3 id="gmTitle">操作</h3><p id="gmSub">—</p></div>
+      <button class="icon-btn" id="btnGmClose" title="关闭"><svg class="ic"><use href="#i-close"/></svg></button></div>
+    <div class="modal-body" id="gmBody"></div>
+    <div class="modal-foot"><span class="modal-spacer"></span><button class="btn ghost slim" id="btnGmCancel">取消</button>
+      <button class="btn primary slim" id="btnGmSave"><svg class="ic"><use href="#i-check"/></svg> 确定</button></div>
+  </div>
+</div>
+
+<div class="login-mask" id="loginMask">
+  <div class="login-card glass">
+    <div class="logo big"><svg class="ic"><use href="#i-whale"/></svg></div>
+    <h3>欢迎回来</h3>
+    <p>登录 DockerUpdate 管理面板 <span class="ver">v7.0.4</span></p>
+    <form id="loginForm" autocomplete="on">
+      <label class="login-label">账号</label>
+      <div class="login-input"><svg class="ic"><use href="#i-shield"/></svg><input id="loginUser" name="username" class="input" value="admin" autocomplete="username" spellcheck="false"></div>
+      <label class="login-label">密码</label>
+      <div class="login-input"><svg class="ic"><use href="#i-key"/></svg><input type="password" id="loginPwd" name="password" class="input" placeholder="请输入密码" autocomplete="current-password"></div>
+      <label class="remember"><input type="checkbox" id="remember" checked><span>记住登录（7 天）</span></label>
+      <button type="submit" class="btn primary wide" id="btnLogin">进入面板</button>
+    </form>
+    <div class="login-err" id="loginErr"></div>
+    <p class="login-hint">默认账号 <b>admin</b>，首次登录后请在「设置 → 账户安全」修改密码</p>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<script src="/static/app.js"></script>
+<script src="/static/console.js"></script>
+<script src="/static/job.js"></script>
+<script src="/static/trends.js"></script>
+<script src="/static/pro.js"></script>
+<script src="/static/mounts.js"></script>
+<script src="/static/symlinks.js"></script>
+</body>
+</html>

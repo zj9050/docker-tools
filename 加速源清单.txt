@@ -1,0 +1,140 @@
+# DockerUpdate 加速源候选清单 · v5.0（117 条：33 GitHub + 62 Docker + 22 非 Hub 前缀）
+# 用法：系统联动 → 加速源 → 批量添加，选择对应的「导入到」，复制下面【某一整段】粘贴即可。
+# 一行一个，自动按换行区分；# 开头是注释，空行忽略；已存在的地址自动跳过。
+# 注意：公共公益源随时可能限流 / 白名单化 / 关停，导入后请点「立即测速」看真实状态。
+
+# 【导入到：GitHub 加速线路】 33 条 —— 用于索引 / 图标 / README，不是 Docker 拉镜像
+GH-Proxy.ORG|https://gh-proxy.org/
+GH-Proxy|https://gh-proxy.com/
+GH DPIK|https://gh.dpik.top/
+GH-Proxy HK|https://hk.gh-proxy.org/
+GHProxy CXK|https://ghproxy.cxkpro.top/
+GH Felicity|https://gh.felicity.ac.cn/
+GHProxy ME|https://github-proxy.memory-echoes.cn/
+GitHub DPIK|https://github.dpik.top/
+GitProxy MRHJX|https://gitproxy.mrhjx.cn/
+GH DDLC|https://gh.ddlc.top/
+CDN GHProxy|https://cdn.gh-proxy.org/
+GH TBAP|https://github.tbap.top/
+GHProxy.net|https://ghproxy.net/
+Cors Proxy|https://cors.isteed.cc/
+Conversun Hub|https://hub.conversun.com/
+YYLX Git|https://git.yylx.win/
+WGET.LA|https://wget.la/
+GHFast|https://ghfast.top/
+GH LLKK|https://gh.llkk.cc/
+DockerProxy.Link|https://dockerproxy.link/
+厚浪镜像|https://mirror.houlang.cloud/
+GitHub Akams|https://github.akams.cn/
+GitMirror Hub|https://hub.gitmirror.com/
+Moeyy GHProxy|https://moeyy.cn/gh-proxy/
+GHP.CI|https://ghp.ci/
+GHProxy HomeboyC|https://ghproxy.homeboyc.cn/
+Toolwa GitHub|https://toolwa.com/github/
+KKGitHub|https://kkgithub.com/
+GitClone.COM|https://gitclone.com/
+BGitHub|https://bgithub.xyz/
+jsDelivr CDN|https://cdn.jsdelivr.net/
+清华 TUNA Release|https://mirrors.tuna.tsinghua.edu.cn/github-release/
+Gitee 镜像库|https://gitee.com/organizations/mirrors/
+
+# 【导入到：Docker 镜像源】 62 个 —— 写入 NAS /etc/docker/daemon.json 的 registry-mirrors
+# 建议只挑 3~5 个实测最快的写入，不要一次全填；改完必须 systemctl restart docker。
+DaoCloud|https://m.daocloud.io/
+DaoCloud Docker|https://docker.m.daocloud.io/
+NJU ghcr|https://ghcr.nju.edu.cn/
+1ms.run|https://docker.1ms.run/
+Rat.Dev|https://hub.rat.dev/
+1Panel|https://docker.1panel.live/
+DockerProxy|https://dockerproxy.net/
+KSpeeder (本地)|http://127.0.0.1:5443/
+轩辕镜像 免费版|https://docker.xuanyuan.me/
+轩辕镜像 专业版|https://docker.xuanyuan.run/
+轩辕镜像 专业版2|https://docker.xuanyuan.dev/
+1Panel 核心用户|https://docker.1panel.dev/
+1Panel.TOP|https://docker.1panel.top/
+Proxy 1Panel|https://proxy.1panel.live/
+Hub 1Panel.DEV|https://hub.1panel.dev/
+Ketches|https://docker.ketches.cn/
+DockerHub.ICU|https://dockerhub.icu/
+网易数帆|https://hub-mirror.c.163.com/
+百度智能云|https://mirror.baidubce.com/
+腾讯云 内网|https://mirror.ccs.tencentyun.com/
+腾讯云 CCR|https://ccr.ccs.tencentyun.com/
+南京大学|https://docker.nju.edu.cn/
+上海交大 SJTUG|https://docker.mirrors.sjtug.sjtu.edu.cn/
+中科大 USTC|https://docker.mirrors.ustc.edu.cn/
+阿里云 杭州|https://registry.cn-hangzhou.aliyuncs.com/
+阿里云 北京|https://registry.cn-beijing.aliyuncs.com/
+阿里云 上海|https://registry.cn-shanghai.aliyuncs.com/
+阿里云 深圳|https://registry.cn-shenzhen.aliyuncs.com/
+阿里云 青岛|https://registry.cn-qingdao.aliyuncs.com/
+阿里云 张家口|https://registry.cn-zhangjiakou.aliyuncs.com/
+飞牛 fnOS 官方|https://docker.fnnas.com/
+CNIX 前海交换中心|https://docker.m.ixdev.cn/
+mxjia Proxy|https://proxy.vvvv.ee/
+科技 Lion|https://docker.kejilion.pro/
+NMQU Registry|https://docker-registry.nmqu.com/
+NAT.TF 节点1|https://hub1.nat.tf/
+NAT.TF 节点2|https://hub2.nat.tf/
+NAT.TF 节点3|https://hub3.nat.tf/
+NAT.TF 节点4|https://hub4.nat.tf/
+中科院软件所|https://mirror.iscas.ac.cn/
+Unsee.Tech|https://docker-0.unsee.tech/
+APIBA|https://docker.apiba.cn/
+HPCloud|https://docker.hpcloud.cloud/
+AtomHub 开放原子|https://atomhub.openatom.cn/
+AnyHub|https://docker.anyhub.us.kg/
+Jobcher|https://dockerhub.jobcher.com/
+DoubleZOnline|https://doublezonline.cloud/
+MRXN|https://docker.mrxn.net/
+DislabAIoT|https://dislabaiot.xyz/
+FXXK deDyn|https://docker.fxxk.dedyn.io/
+AIGC2D|https://docker-mirror.aigc2d.com/
+AITyp|https://docker.aityp.com/
+XiSoul|https://dockerhub.xisoul.cn/
+LittleDiary|https://hub.littlediary.cn/
+Actima|https://docker.actima.top/
+SparkCR|https://docker.sparkcr.cn/
+DockerProxy.Cool|https://dockerproxy.cool/
+Anye|https://docker.anye.in/
+爱铭网络|https://docker.amingg.com/
+GXL 1Panel|https://docker.367231.xyz/
+Geekery|https://hub.geekery.cn/
+ShaunYang|https://docker.shaunyang.site/
+
+# 【导入到：非 Docker Hub 仓库前缀】 22 条 —— GHCR / Quay / gcr / K8s / MCR 等改写镜像地址
+# registry-mirrors 只对 Docker Hub 生效，这些不能写进 daemon.json。
+DaoCloud 通用前缀|m.daocloud.io/
+DaoCloud GHCR|ghcr.m.daocloud.io/
+DaoCloud Quay|quay.m.daocloud.io/
+DaoCloud GCR|gcr.m.daocloud.io/
+DaoCloud K8s|k8s.m.daocloud.io/
+DaoCloud K8s 旧域|k8s-gcr.m.daocloud.io/
+DaoCloud MCR|mcr.m.daocloud.io/
+DaoCloud NVCR|nvcr.m.daocloud.io/
+DaoCloud Elastic|elastic.m.daocloud.io/
+DaoCloud Ollama|ollama.m.daocloud.io/
+DaoCloud DockerHub|docker.m.daocloud.io/
+1ms GHCR|ghcr.1ms.run/
+南大 GHCR|ghcr.nju.edu.cn/
+南大 Quay|quay.nju.edu.cn/
+Chenby GHCR|ghcr.chenby.cn/
+Chenby Quay|quay.chenby.cn/
+Chenby GCR|gcr.chenby.cn/
+Chenby K8s|k8s.chenby.cn/
+registry.cyou GHCR|ghcr.registry.cyou/
+registry.cyou Quay|quay.registry.cyou/
+registry.cyou K8s|k8s.registry.cyou/
+registry.cyou NVCR|nvcr.registry.cyou/
+
+# 推荐的最小 daemon.json 片段（按你的实测结果替换）：
+# {
+#   "registry-mirrors": [
+#     "https://docker.1ms.run",
+#     "https://docker.m.daocloud.io",
+#     "https://docker.xuanyuan.me",
+#     "https://hub.rat.dev",
+#     "https://docker.1panel.live"
+#   ]
+# }
